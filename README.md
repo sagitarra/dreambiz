@@ -1,5 +1,5 @@
 # dreambiz
-DreamBiz is a business-location intelligence prototype derived from a Smart Cities Hackathon concept.
+DreamBiz is a business-location intelligence prototype derived from a Smart Cities Hackathon winner.
 
 The original idea was to explore how the cameras, sensors, geographic data, and other information being collected by modern cities could be used for something beyond surveillance and traffic enforcement.
 
