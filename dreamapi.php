@@ -543,7 +543,7 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
             \'<div id="infowinbiz"><p>\' + data[i].bizname + \'</p><p><span id="infowinbizsqft">\' +
              data[i].address +\'</span><span id="infowinbizprice">\' + \'possible competitor\' + \'</span></p></div>\' +
             \'<div id="infowinfsale">\' + \'<img src="image/\' + stars +\'star.png" alt="" style="padding:0 8px 0 0;"></div>\' +
-            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + data[i].address + \',\' + data[i].zip + \'&key=AIzaSyBa--AD2C0bdNrO3JRpRm9J5OAV9acMU6w" alt=""></div>\' +
+            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + data[i].address + \',\' + data[i].zip + \'&key=' . $GLOBALS['GOOGLE_API_KEY'] . '" alt=""></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
             \'<div id="infowindetails" >\' +
@@ -652,7 +652,7 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
             \'<div id="infowinbiz"><p>\' + availablesite[i].address + \'<span id="infowinbiztype">\' + availablesite[i].type + \'</span></p><p><span id="infowinbizsqft">\' +
             availablesite[i].size.list + \'</span><span id="infowinbizprice">\' + availablesite[i].price.list + \'</span></p></div>\' +
             \'<div id="infowinfsale">\' + \'<img src="\' + pricetag +\'" alt="">"</div>\' +
-            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + availablesite[i].address + \', 92101&key=AIzaSyCJCQuSHbstED_Gcm8S0QBb5AYMHx6auxg" alt=""></div>\' +
+            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + availablesite[i].address + \', 92101&key=' . $GLOBALS['GOOGLE_API_KEY'] . '" alt=""></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
               \'<div id="infowindetails" >\' +
