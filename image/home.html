@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dreambiz</title>
+    <link rel="stylesheet" href="dbiz-main.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ek+Mukta">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+
+
+
+</head>
+
+<body>
+<div class="top-third">
+<div class="dropdown dbiz-nav">
+    <a href="javascript:void(0)" class="dropbtn"><H2 class="dbiz-nav-title">DREAMBIZ</H2> </a>
+    <p>Find your dream business in town</p>
+    <div class="dropdown-content">
+        <a href="http://dreambiz.today/search-coffee.html">coffee</a>
+        <a href="http://dreambiz.today/find-coffee.html">find</a>
+        <a href="http://dreambiz.today/compare-coffee.html">compare</a>
+        <a href="http://dreambiz.today/search-beer.html">beersearch</a>
+        <a href="https://olsonb.carto.com/builder/52a15bec-c8e4-454f-b4ac-7987016498d8/embed">TECH</a>
+        <a href="http://dreambiz.today/beer-land.html">FURTHER</a>
+    </div>
+</div>
+    </div>
+<div class="mid-third">
+
+
+<div class=" search-box">
+    <H2>What is your dream?</H2>
+    <div class="input-center">
+    <form id="search-form" action="dreamapi.php" method="post">
+
+        <input id="bizsearch" name="term" placeholder="enter business type here">
+
+    </form>
+    </div>
+</div>
+
+</div>
+<div class="bottom-third padding-top">
+    <div class="icon-box">
+        <img src="image/robot.png">
+        <p>1. Enter your industry</p>
+    </div>
+    <div class="icon-box side-border">
+        <img src="image/store.png">
+        <p>2. Find your perfect spot</p>
+    </div>
+    <div class="icon-box">
+        <img src="image/growth.png">
+        <p>3. Start your dream</p>
+    </div>
+
+</div>
+</body>
+<script>
+    'use strict';
+    $(function(){
+        $('.slideShow img:gt(0)').hide();
+        setInterval(function(){
+                    $('.slideShow :first-child').fadeOut(2000)
+                            .next('img').fadeIn(2000)
+                            .end().appendTo('.slideShow');},
+                9000);
+    });
+
+
+
+
+    bizsearch.onkeyup = function (e) {
+        e = e || event;
+        var bizsearch = document.getElementById('bizsearch'),
+                searchform = document.getElementById('search-form');
+
+        if (e.keyCode === 13 && !e.ctrlKey) {
+            searchform.submit();
+            bizsearch.setAttribute('placeholder', "enter business type here");
+
+        }
+        return true;
+    };
+</script>
+</html>

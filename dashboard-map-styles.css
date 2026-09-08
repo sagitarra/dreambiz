@@ -1,0 +1,380 @@
+
+.map-container{
+    font-family: 'Cabin', sans-serif;
+    padding:0;
+    width:100%;
+    display:inline-block;
+}
+.control-box{
+    height: 100vh;
+    width: 20%;
+    display: inline-block;
+    text-align: left;
+    background: #ffffff;
+}
+.control-header{
+    color:#FFFFFF;
+    background:#494949;
+    padding:0;
+    margin:0;
+    width:100%;
+    height: 60px;
+}
+.control-header h3{
+    font-weight: bold;
+    font-size: 22px;
+    letter-spacing: 4px;
+    margin:0;
+    padding:16px 0 0 26px;
+}
+.controls{
+    background:#FFFFFF;
+    color:#494949;
+    width:100%;
+    height:600px;
+    padding:0;
+    margin:0;
+}
+.control-segment{
+    width:100%;
+    border-bottom: 1px solid #c8c8c8;
+}
+.control-segment h4{
+    margin:0;
+    padding: 4% 0 4% 4%;
+}
+.control-segment-header{
+    background:#F3F3F3;
+    height:45px;
+    width:100%;
+}
+.control-segment-header p{
+    padding: 14px 0 0 13px;
+    margin:0;
+    display:inline-block;
+}
+.control-segment-header button{
+    color:#FFFFFF;
+    font-size:10px;
+    font-weight: bold;
+    height:25px;
+    width:60px;
+    background:#c8c8c8;
+    border: none;
+    border-radius: 20px;
+    float:right;
+    padding:0;
+    margin: 10px 10px 0 0;
+    display:inline-block;
+}
+.control-segment-header button:hover{
+    background: #bababa;
+}
+
+
+.slider-box{
+    display:block;
+    padding-bottom:5%;
+}
+.slider-box p{
+    font-size:12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin:0;
+    padding: 4% 0 0 4%;
+}
+
+.display-slider-amount input{
+    font-size:16px;
+    font-weight: bold;
+    color:#494949;
+    width:35%;
+    margin:0;
+    padding-top:5%;
+    padding-bottom:3%;
+    border:none;
+    display:inline-block;
+}
+.slider-slot{
+    display:block;
+    clear: both !important;
+}
+#slider-price, #slider-size, #slider-activity{
+    width:85%;
+    height:3px;
+    background-color:#DDDDDD;
+    border:none;
+    text-align:center;
+    margin:auto;
+}
+
+a.ui-slider-handle{
+    background-color:#494949!important;
+    height:13px !important;
+    width:13px !important;
+    border:none !important;
+    border-radius:7px !important;;
+}
+.ui-slider-range{
+    height:3px !important;
+    background-color:#494949 !important;
+
+}
+
+
+.amountone{
+    float:left;
+    text-align: left;
+    padding-left:5%;
+
+}
+.amounttwo{
+    float:right;
+    text-align: right;
+    padding-right:5%;
+
+}
+#saveactivity,#saveproperties, #saveindustry{
+    display:none;
+}
+.activitypicker input{
+    padding:0;
+    margin: 10px 0 10px 25px;
+}
+.map-box{
+    width:80%;
+    padding:0;
+    margin:0;
+    display:inline-block !important;
+    float:right;
+    clear:none;
+
+}
+.map-header{
+    color:#FFFFFF;
+    background: rgba(73, 73, 73, 0.7);
+    text-align: left;
+    padding:0;
+    position:relative;
+    z-index:500;
+    margin:0;
+    width:100%;
+    height: 60px;
+
+}
+.map-header p{
+    font-weight:bold;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin:0;
+    padding: 21px 0 0 37px;
+}
+#map {
+    margin-top: -60px;
+    width: 100%;
+    height: 100vh;
+}
+/*google popups CSS from   */
+/*google's #map
+#map {
+    height: 100%;
+}
+//*/
+
+
+/* The location pointed to by the popup tip. */
+.popup-tip-anchor {
+    height: 0;
+    position: absolute;
+    /* The max width of the info window. */
+    width: 200px;
+}
+/* The bubble is anchored above the tip. */
+.popup-bubble-anchor {
+    position: absolute;
+    width: 100%;
+    bottom: /* TIP_HEIGHT= */ 8px;
+    left: 0;
+}
+/* Draw the tip. */
+.popup-bubble-anchor::after {
+    display:none;
+ /*   content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    /* Center the tip horizontally. */
+  /*  transform: translate(-50%, 0);
+    /* The tip is a https://css-tricks.com/snippets/css/css-triangle/ */
+/*
+    margin:0 auto 0;
+    width: 0;
+    height: 0;
+    border-left: 30px solid transparent;
+    border-right: 30px solid transparent;
+    border-top: 38px solid #FFFFFF; */
+}
+/* The popup bubble itself. */
+.popup-bubble-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: translate(0%, -100%);
+    /* Style the info window. */
+    background-color: white;
+    padding: 5px;
+    border-radius: 5px;
+    font-family: sans-serif;
+    overflow-y: auto;
+    max-height: 60px;
+    box-shadow: 0px 2px 10px 1px rgba(0,0,0,0.5);
+}
+/*end google popups CSS */
+
+
+
+
+#infowincontent{
+    background: #FFFFFF;
+    width: 260px;
+    margin:0 0 0 0;
+    padding:0 0 12px 0;
+   z-index: 1000;
+
+}
+#infowinbiz{
+    width:185px;
+    font-size:12px;
+    margin:0;
+    padding:13px 0 0 10px;
+}
+#infowinbiz p{
+    color: #333333;
+    font-weight:bold;
+    text-align:left;
+    padding: 0 0 0 0;
+    margin:0 0 0 0;
+}
+#infowinbiz span{
+    font-size:12px;
+    font-weight:100;
+    margin:0;
+    padding:5px 1px 10px 0;
+    color: #494949;
+
+}
+span#infowinbiztype{
+    float:right;
+    margin:0;
+    padding:0 1px 0 0;
+}
+#infowinbizsqft{
+    display:inline-block;
+    float:left;
+    margin:0;
+    padding:0;
+}
+#infowinbizprice{
+    display:inline-block;
+    float:right;
+    margin:0;
+    padding:0;
+}
+#infowinfsale{
+    margin:0;
+    padding:0;
+    position: absolute;
+    top: 12px;
+    right: 17px;
+}
+#infowinfsale img{
+    width:70px;
+}
+#infowinimg{
+    height: 165px;
+    background: #666666;
+    text-align: center;
+    margin:0 auto;
+    padding:0;
+    display:block;
+    clear:both;
+}
+#infowinimg img{
+    height: 100%;
+    text-align: center;
+    margin:auto;
+
+}
+#infowingraf{
+    text-align: center;
+    margin:-30px auto 0;
+    padding:0 0 0 0;
+    background: #FFFFFF;
+    position:relative;
+    z-index:1000;
+}
+#infowingraf img{
+    width:80%;
+}
+.InfoWinGraph{
+    display:none;
+}
+#iwinstortraffic{
+    background: #c8c8c8;
+    height: 8px;
+    width:80%;
+    text-align: center;
+    margin: 4px auto 0;
+}
+#iwinstortrafficamt{
+    background: #7dcdcd;
+    position:relative;
+    margin:0;
+    padding:0;
+    height:100%;
+    width: 65%;
+}
+
+ #circgraph{
+    width:71px;
+    height:71px;
+    border:1px solid #c8c8c8;
+     border-radius:40px;
+ }
+
+#infowingrafdesc{
+    font-size: 10px;
+    text-align: center;
+    margin:4px auto ;
+    padding: 0 10px;
+    display:block;
+    max-height: 75px;
+    overflow:auto;
+}
+#infowindetails{
+  display:none;
+}
+#infowinbutblk{
+    margin:0;
+    padding:10px;
+}
+#infowinbutblkhide{
+    margin:0;
+    padding:10px;
+
+}
+#infowinbutblk p, #infowinbutblkhide p{
+    color:#FFFFFF;
+    background:#494949;
+    font-size: 16px;
+    font-weight:400;
+    padding:7px 5px;
+    width:50%;
+    text-align:center;
+    margin:0 auto;
+    cursor:pointer;
+}
+
+
+
+

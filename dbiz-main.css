@@ -1,0 +1,233 @@
+/*
+///////////////DESIGN COLORS//////////////////////////////////////////////////
+copyright EV HENKE DESIGNS 2017
+I mainly used two anthracite shades with several opacities.
+* For the header I used #383838 (charcoal) with 80% opacity
+* Font-color and UI elements are mostly #494949 (charcoal)
+* The sliders are currently 274 px wide, 4px large, round ends, 0.2 opacity
+* Selected areas of sliders is full opacity, selectors/ends are circles with 16px radius
+* The background color of the filter headers #F3F3F3 (off-white), 0.9 opacity
+* As highlight color I used #77D2CC (light blue) , which currently is only used for the coffee pins and then on the detail page
+
+*Fonts used on the landing page*
+* For the Headline I used Brandon Grotesque, Bold, 45px
+* For the rest of the copy I used Brandon Grotesque, Regular, 24 px
+
+*Fonts used on the result / filter page*
+* Page Title (“Coffee shops in San Diego”): Brandon Grotesque, Regular, 22px, #fff, padding-left: 38px
+* Filter Title (e.g. “Industry filter”): Brandon Grotesque, Bold, Uppercase, 16px, 0.9% Letter spacing, #494949 , 0.8 opacity
+* Filter Label (e.g. “Coffee shops”, “Price range”, “Traffic volume”): Brandon Grotesque, Medium, 15px, #494949
+* Filter Value (e.g. “$500,000"): Brandon Grotesque, Bold, 20px, #494949
+*Button Edit Filter: Brandon Grotesque, Bold, 13px, #fff
+* Button BG: w: 74px, h: 24px, #c8c8c8 , border radius: 100
+*/
+
+body {
+    font-family: 'Cabin', sans-serif;
+    height:100%;
+    margin: 0;
+    font-size:15px;
+    background: #1c120c;
+}
+html{
+    height: 100%;
+}
+/* these three are used in the image resize function that makes the slideshow fill the page*/
+#bg { position: fixed; top: 0; left: 0; }
+.bgwidth { width: 100%; }
+.bgheight { height: 100%; }
+
+.slideshow img{
+    position:absolute;
+    top:0;
+    display:none;
+    object-fit: cover;
+    z-index:-100;
+    width:100%;
+}
+
+.container{
+    width:800px;
+    text-align:center;
+    margin:auto;
+}
+
+.container img{
+    text-align:center;
+    margin:auto;
+    max-width: 900px;
+}
+header {
+   /* background-color: #2A2A2A; */
+    color: #FFFFFF;
+    text-align: center;
+    padding: 0 0 0;
+    margin: 0;
+    clear: both;
+}
+
+
+header h1 {
+    font-size: 150%;
+    margin: 0;
+    display: block;
+    padding: 0 0 0;
+}
+.dbiz-header {
+    width: 100%;
+    height: 35px;
+    color: #383838;
+    padding: 0 0 0 0;
+    margin:0;
+    clear: both;
+}
+.saglogo img{
+    float:left;
+    height:35px;
+
+}
+/*
+nav ul {
+    margin: 0;
+    font-size: 18px;
+    display: inline;
+    padding: 0 0 0 0;
+}
+*/
+.top-third, .mid-third, .bottom-third{
+    height: 30%;
+    text-align:center;
+    margin: auto;
+}
+
+.dbiz-nav-title {
+    font-weight: bold;
+    font-size: 25px;
+    letter-spacing: 4px;
+    margin:0;
+}
+.dbiz-nav  {
+    color: white;
+    background: rgba(73, 73, 73, 0.4);
+    border: solid #FFFFFF 4px;
+    text-align:center;
+    display: block;
+    list-style-type: none;
+    padding:  10px 40px 7px 40px;
+    margin:83px 0 0 0;
+
+
+
+}
+.dbiz-nav p{
+    font-size:12px;
+    font-weight: 300;
+    letter-spacing: 2px;
+    margin:0;
+    padding:0 0 5px 0;
+
+}
+.search-box{
+    color: #FFFFFF;
+    text-align:center;
+    margin:auto;
+
+
+}
+.search-box H2{
+    font-size: 26px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    padding: 90px 0 21px 0;
+    margin: 0 0 0 0;
+
+}
+.search-box input{
+    background: rgba(73, 73, 73, 0.4);
+    border: solid #FFFFFF 2px;
+    border-radius: 22px;
+    color:#FFFFFF;
+    font-size:18px;
+    height: 37px;
+    width: 285px;
+    text-align:center;
+    margin: auto;
+    display: block;
+
+
+}
+.icon-box {
+    width: 30%;
+    text-align: center;
+    margin:auto;
+    display:inline-block;
+
+}
+.icon-box img{
+    width: 57px;
+    padding: 0 0 16px 0;
+    margin: 0 0 0 0;
+
+}
+.icon-box p{
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+}
+.padding-top{
+    padding:90px 0 0 0;
+}
+.side-border{
+   border-left: 1px solid #FFFFFF;
+    border-right: 1px solid #FFFFFF;
+}
+
+
+/* unvisited link */
+a:link {
+    color: white;
+    text-decoration: none;
+}
+/* visited link */
+ a:visited {
+    color: white;
+    text-decoration: none;
+}
+/* mouse over link */
+ a:hover {
+    color: #FAC525;
+    text-decoration: none;
+}
+/* selected link */
+a:active {
+    color: #19A3D1;
+    text-decoration: none;
+}
+
+
+.dropdown {
+    display: inline-block;
+}
+
+.dropdown-content { /*colors the drop down box  */
+    display: none;
+    position: absolute;
+    background-color:#999999;
+    z-index: 1;
+}
+
+.dropdown-content a {
+    padding: 5px 10px;
+    text-decoration: none;
+    display: block;
+    text-align: left;
+}
+
+.dropdown-content a:hover {background-color: #2A2A2A}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}

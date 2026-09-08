@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DreamBiz Location Finder</title>
+	<meta name="description" content="DreamBiz helps new business owners by offering the best location for a new business. Extensive dataset creates an accurate model for finding the best traffic areas for you " />
+	
+	<link rel="canonical" href="https://dreambiz.today/" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="DreamBiz Location Finder" />
+	<meta property="og:description" content="DreamBiz helps new business owners by offering the best location for a new business. Extensive dataset creates an accurate model for finding the best traffic areas for you " />
+	<meta property="og:url" content="http://dreambiz.today/" />
+	<meta property="og:site_name" content="DreamBiz" />
+	<meta property="og:image" content="http://sagitarra.com/wp-content/uploads/2021/02/dreambiz-screen-shot.png" />
+    <link rel="stylesheet" href="dbiz-main.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cabin">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ek+Mukta">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+
+
+
+</head>
+<body onload="fader()">
+<div  id="bg">
+    <div class="slideshow">
+        <img src="https://dreambiz.today/image/bg-alex-robert-min.jpg">
+        <img src="https://dreambiz.today/image/bg-christelle-bourgeois-min.jpg">
+        <img src="https://dreambiz.today/image/bg-clark-young-min.jpg">
+        <img src="https://dreambiz.today/image/bg-clem-onojeghuo-min.jpg">
+        <img src="https://dreambiz.today/image/bg-clem-onojeghuo2-min.jpg">
+        <img src="https://dreambiz.today/image/bg-patrick-tomasso-min.jpg">
+    </div>
+<div class="top-third">
+<div class="dropdown dbiz-nav">
+    <a href="javascript:void(0)" class="dropbtn"><H2 class="dbiz-nav-title">DREAMBIZ</H2> </a>
+    <p>Find your dream business in town</p>
+    <div class="dropdown-content">
+        <a href="https://dreambiz.today/search-coffee.html">coffee</a>
+        <a href="https://dreambiz.today/find-coffee.html">find</a>
+        <a href="https://dreambiz.today/compare-coffee.html">compare</a>
+        <a href="https://dreambiz.today/search-beer.html">beersearch</a>
+        <a href="https://olsonb.carto.com/builder/52a15bec-c8e4-454f-b4ac-7987016498d8/embed">TECH</a>
+        <a href="https://dreambiz.today/beer-land.html">FURTHER</a>
+    </div>
+</div>
+    </div>
+<div class="mid-third">
+
+
+<div class=" search-box">
+    <H2>What is your dream?</H2>
+    <div class="input-center">
+    <form id="search-form" action="dreamapi.php" method="post">
+
+        <input id="bizsearch" name="term" placeholder="enter business type here">
+
+    </form>
+    </div>
+</div>
+
+</div>
+<div class="bottom-third padding-top">
+    <div class="icon-box">
+        <img src="image/robot.png">
+        <p>1. Enter your industry</p>
+    </div>
+    <div class="icon-box side-border">
+        <img src="image/store.png">
+        <p>2. Find your perfect spot</p>
+    </div>
+    <div class="icon-box">
+        <img src="image/growth.png">
+        <p>3. Start your dream</p>
+    </div>
+
+</div>
+    </div>
+
+<script>
+    'use strict';
+
+   /*this resizes the images in the slide show so they always fit the page - it doesn't center but hey...it's art!  */
+    $(window).load(function() {
+        /*instantiate variables  */
+        var theWindow = $(window),
+                $bg   = $("#bg"),
+                aspectRatio  = $bg.width() / $bg.height();
+         /*create the function  */
+        function resizeBg() {
+            if ( (theWindow.width() / theWindow.height()) < aspectRatio ) {
+                $bg.removeClass().addClass('bgheight');
+            } else {
+                $bg.removeClass().addClass('bgwidth');
+            }
+
+        }
+         /*call the resize function whenever the window resizes*/
+        theWindow.resize(resizeBg).trigger("resize");
+
+    });
+    /*this runs the slide show on the front page */
+    function fader() {
+        $("img").first().appendTo('.slideshow').fadeOut(8400);
+        $("img").first().fadeIn(8400);
+        setTimeout(fader, 11480);
+    }
+
+   /*this submits the business type chosen by the user when the user presses the enter button and releases it*/
+    bizsearch.onkeyup = function (e) {
+        e = e || event;
+        var bizsearch = document.getElementById('bizsearch'),
+                searchform = document.getElementById('search-form');
+
+        if (e.keyCode === 13 && !e.ctrlKey) {
+            searchform.submit();
+            bizsearch.setAttribute('placeholder', "enter business type here");
+
+        }
+        return true;
+    };
+</script>
+</body>
+</html>
