@@ -395,8 +395,8 @@ function generateDemandGrid(centerLat, centerLon, radiusMiles, spacingMiles) {
 var demandGrid = generateDemandGrid(
     dago.lat,
     dago.lng,
-    1,
-    0.05
+    1.8,//grid coverage
+    0.05 //resolution
 );
 
 
@@ -458,9 +458,12 @@ new google.maps.Circle({
 //* PSEUDO DEMAND
 
 var demandCenters = [
-    { lat: 32.7157, lon: -117.1601, strength: 100 },
-    { lat: 32.7205, lon: -117.1550, strength: 75 },
-    { lat: 32.7100, lon: -117.1680, strength: 60 }
+    { lat: 32.7242, lon: -117.1701, strength: 69 },//little italy
+    { lat: 32.7122, lon: -117.1624, strength: 82 },//gaslamp
+    { lat: 32.7027, lon: -117.1501, strength: 50 },//chicano park
+    { lat: 32.7316, lon: -117.1513, strength: 64 },//balboa park
+    { lat: 32.7180, lon: -117.1695, strength: 52 },//100 west a
+    { lat: 32.7107, lon: -117.1712, strength: 90 }//petco park
 ];
 
 for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
@@ -482,22 +485,29 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
         );
 
         demand += center.strength *
-            Math.exp(-(distance * distance) / 0.15);
+            Math.exp(-(distance * distance) / 0.15);//adjust the gradient curve for demand centers
     }
 
     demand = Math.max(0, Math.min(100, demand));
 
-    new google.maps.Circle({
+    var cellSize = 0.05;
+
+    var cellLat = cellSize / 69;
+    var cellLon = cellSize / (69 * Math.cos(point.lat * Math.PI / 180));
+
+    new google.maps.Rectangle({
         map: map,
-        center: {
-            lat: point.lat,
-            lng: point.lon
+        bounds: {
+            north: point.lat + cellLat / 2,
+            south: point.lat - cellLat / 2,
+            east: point.lon + cellLon / 2,
+            west: point.lon - cellLon / 2
         },
-        radius: 40,
-        fillColor: \'#5A8BFF\',
-        fillOpacity: 0.05 + (demand / 100) * 0.45,
+        fillColor: \'#0597ff\',
+        fillOpacity: (demand / 100) * 0.62,
         strokeOpacity: 0
     });
+
 }
 //*/
       //creates array for heatmap to be filled with dark competitor clouds
@@ -510,6 +520,55 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
       //instantiate position variable from data array
          var pos = new google.maps.LatLng(data[i].lat,data[i].long);
          heatmaparray.push({location: pos, weight: rating});// syntax from google API reference -- {location: new google.maps.LatLng(37.782, -122.447), weight: 0.5},
+
+        //make the red heatmap blob for each competitor business
+
+       var ratingOpacity = Math.max(0, ((rating - 3.5) / 1.5) * 0.50);
+
+var yelpGrid = generateDemandGrid(
+    data[i].lat,
+    data[i].long,
+    0.44,  // ~700 meter radius
+    0.05   // ~16 meter resolution
+);
+
+for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
+
+    var yelpPoint = yelpGrid[yelpGridIndex];
+
+    var latDistance = (yelpPoint.lat - data[i].lat) * 69;
+    var lonDistance = (yelpPoint.lon - data[i].long) *
+        (69 * Math.cos(yelpPoint.lat * Math.PI / 180));
+
+    var distance = Math.sqrt(
+        latDistance * latDistance +
+        lonDistance * lonDistance
+    );
+
+    var competition = ratingOpacity *
+        Math.exp(-(distance * distance) / 0.08);
+
+    var cellSize = 0.05;
+
+    var cellLat = cellSize / 69;
+    var cellLon = cellSize /
+        (69 * Math.cos(yelpPoint.lat * Math.PI / 180));
+
+    new google.maps.Rectangle({
+        map: map,
+        bounds: {
+            north: yelpPoint.lat + cellLat / 2,
+            south: yelpPoint.lat - cellLat / 2,
+            east: yelpPoint.lon + cellLon / 2,
+            west: yelpPoint.lon - cellLon / 2
+        },
+        fillColor: \'#FF0000\',
+        fillOpacity: competition,
+        strokeOpacity: 0
+    });
+}
+
+
 
          //get the rating value and change it to part of the stars image name - take out the decimal or add a zero
          var stars = "";
@@ -543,7 +602,7 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
             \'<div id="infowinbiz"><p>\' + data[i].bizname + \'</p><p><span id="infowinbizsqft">\' +
              data[i].address +\'</span><span id="infowinbizprice">\' + \'possible competitor\' + \'</span></p></div>\' +
             \'<div id="infowinfsale">\' + \'<img src="image/\' + stars +\'star.png" alt="" style="padding:0 8px 0 0;"></div>\' +
-            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + data[i].address + \',\' + data[i].zip + \'&key=' . $GLOBALS['GOOGLE_API_KEY'] . '" alt=""></div>\' +
+            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + data[i].address + \',\' + data[i].zip + \'&key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=marker" alt="yelp competing business image source google api"></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
             \'<div id="infowindetails" >\' +
@@ -652,7 +711,7 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
             \'<div id="infowinbiz"><p>\' + availablesite[i].address + \'<span id="infowinbiztype">\' + availablesite[i].type + \'</span></p><p><span id="infowinbizsqft">\' +
             availablesite[i].size.list + \'</span><span id="infowinbizprice">\' + availablesite[i].price.list + \'</span></p></div>\' +
             \'<div id="infowinfsale">\' + \'<img src="\' + pricetag +\'" alt="">"</div>\' +
-            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + availablesite[i].address + \', 92101&key=' . $GLOBALS['GOOGLE_API_KEY'] . '" alt=""></div>\' +
+            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + availablesite[i].address + \', 92101&key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=marker" alt="available business location for rent or lease"></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
               \'<div id="infowindetails" >\' +
@@ -732,14 +791,8 @@ for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
         });
         */
            var pointArray = new google.maps.MVCArray(heatmaparray);
-         /*
-          heatmap = new google.maps.visualization.HeatmapLayer({
-          data: pointArray,
-          radius: 90,
-          gradient:[ "rgba(255, 0, 0, 0)","rgba(255, 0, 0, 0.3)","rgba(255, 0, 0, 1)"],
-          map: map
-        });
-        */
+
+
 
        trafficLayer = new google.maps.TrafficLayer();
        // trafficLayer.setMap(map);
@@ -1642,7 +1695,7 @@ function definePopupClass() {
     </script>
     <script async defer
 
-    src="https://maps.googleapis.com/maps/api/js?key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=visualization&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=visualization,marker&callback=initMap">
     </script>
 
 </html>
