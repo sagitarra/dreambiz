@@ -1,189 +1,14 @@
 
 <?php
-/*/////////////////////load error check//////////////////////////////////////////////////
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-//*//////////////////////////////////////////////////////////////////////////////////////////
-
-/*//////////////////////////////php info//////////////////////////////////////////////////////////
-phpinfo();
-die();
-
-/*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/* /////////////////////diagnostic test for missing certificate info///////////////////////////////////
-echo 'PHP: ' . PHP_VERSION . '<br>';
-echo 'cURL: ' . curl_version()['version'] . '<br>';
-echo 'CA info: ' . ini_get('curl.cainfo') . '<br>';
-echo 'OpenSSL CA: ' . ini_get('openssl.cafile') . '<br>';
-die();
-//*/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 require_once 'apikeys.php';
-// API key placeholders that must be filled in by users.
-// You can find it on
-// https://www.yelp.com/developers/v3/manage_app
-$API_KEY = $YELP_API_KEY;
-// Complain if credentials haven't been filled out.
-
-//assert($API_KEY, "Please supply your API key.");
-// API constants, you shouldn't have to change these.
-$API_HOST = "https://api.yelp.com";
-$SEARCH_PATH = "/v3/businesses/search";
-$BUSINESS_PATH = "/v3/businesses/";  // Business ID will come after slash.
-// Defaults for our simple example.
-$DEFAULT_TERM = "dinner";
-$DEFAULT_LOCATION = "San Diego, CA";
-$SEARCH_LIMIT = 40;
-/**
- * Makes a request to the Yelp API and returns the response
- *
- * @param    $host    The domain host of the API
- * @param    $path    The path of the API after the domain.
- * @param    $url_params    Array of query-string parameters.
- * @return   The JSON response from the request
- */
-function request($host, $path, $url_params = array()) {
-    // Send Yelp API Call
-    try {
-        $curl = curl_init();
-        if (FALSE === $curl)
-            throw new Exception('Failed to initialize');
-        $url = $host . $path . "?" . http_build_query($url_params);
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,  // Capture response.
-            CURLOPT_ENCODING => "",  // Accept gzip/deflate/whatever.
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 30,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => "GET",
-            CURLOPT_HTTPHEADER => array(
-                "authorization: Bearer " . $GLOBALS['CURL_AUTH'],
-                "cache-control: no-cache",
-            ),
-        ));
-        $response = curl_exec($curl);
-        if (FALSE === $response)
-            throw new Exception(curl_error($curl), curl_errno($curl));
-        $http_status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if (200 != $http_status)
-            throw new Exception($response, $http_status);
-        curl_close($curl);
-    } catch(Exception $e) {
-        trigger_error(sprintf(
-            'Curl failed with error #%d: %s',
-            $e->getCode(), $e->getMessage()),
-            E_USER_ERROR);
-    }
-    return $response;
-}
-/**
- * Query the Search API by a search term and location
- *
- * @param    $term        The search term passed to the API
- * @param    $location    The search location passed to the API
- * @return   The JSON response from the request
- */
-function search($term, $location) {
-    $url_params = array();
-
-    $url_params['term'] = $term;
-    $url_params['location'] = $location;
-    $url_params['limit'] = $GLOBALS['SEARCH_LIMIT'];
-
-    return request($GLOBALS['API_HOST'], $GLOBALS['SEARCH_PATH'], $url_params);
-}
-/**
- * Query the Business API by business_id
- *
- * @param    $business_id    The ID of the business to query
- * @return   The JSON response from the request
- */
-function get_business($business_id) {
-    $business_path = $GLOBALS['BUSINESS_PATH'] . urlencode($business_id);
-
-    return request($GLOBALS['API_HOST'], $business_path);
-}
-/**
- * Queries the API by the input values from the user
- *
- * @param    $term        The search term to query
- * @param    $location    The location of the business to query
- */
+require_once 'yelp.php';
 
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-function query_api($term, $location)
-{
-
-    $response = json_decode(search( $term, $location));
-    //$business_id = $response->businesses[0]->id;
-    //$coordinates = $response->businesses[0]->coordinates;
-    /* $count = count($response->businesses); //may use for looping or display */
-    // echo $coordinates;
-
-    $business_info = array();
-
-    foreach ($response->businesses as $business) {
-
-        $fill_array['bizname'] = $business->name;
-        $fill_array['image'] = $business->image_url;
-        $fill_array['lat'] = $business->coordinates->latitude;
-        $fill_array['long'] = $business->coordinates->longitude;
-        $fill_array['address'] = $business->location->address1;
-        $fill_array['zip'] = $business->location->zip_code;
-        $fill_array['rating'] = $business->rating;
-
-        array_push($business_info, $fill_array);
-    }
-
-    return json_encode($business_info);
-
-
-    // $response = get_business($bearer_token, $business_id);
-    /*
-        echo json_encode(get_business($bearer_token, $business_id));
-    */
-
-
-}
-
-
-
-/**
- * User input is handled here
- */
-
+//User input is handled here
 $term = $_POST['term'] ?: $GLOBALS['DEFAULT_TERM'];
 
-//original from online version
-//$location = $options['location'] ?: $GLOBALS['DEFAULT_LOCATION'];
-
-//test for location
+//test for location- currently just defaults because prototype only works for San Diego
 $location = $GLOBALS['DEFAULT_LOCATION'];
-
-
-
-//query_api($term, $location);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/**
- * User input is handled here
- */
-/*
-$longopts  = array(
-    "term::",
-    "location::",
-);
-
-$options = getopt("", $longopts);
-$term = $options['term'] ?: $GLOBALS['DEFAULT_TERM'];
-$location = $options['location'] ?: $GLOBALS['DEFAULT_LOCATION'];
-query_api($term, $location);
-
-*/
-
 
 echo '
 <!DOCTYPE html>
@@ -326,6 +151,7 @@ echo '
     </div>
 </div>
 
+    <script src="heatmap.js"></script>
 </body>
     <script>
 
@@ -339,11 +165,11 @@ echo '
        var availablesite = getSiteList();//mock data from loopnet for available properties
 
 
-        var dago = {lat: 32.715701, lng: -117.160130},//location variable hard coded to location of US Grant hotel - still the center of town! (a default central location for hackathon datasets)
-         data =  ' . query_api($term, $location) . ',//data from yelp api search - location and term instantiated in above php code
-         searchterm = "'.$term.'",
-         pricetag = \'https://dreambiz.today/image/forleasetag.png\',
-        availsizelow = 1000000000;
+        var dago = {lat: 32.715701, lng: -117.160130};//location variable hard coded to location of US Grant hotel - still the center of town! (a default central location for hackathon datasets)
+        var yelpdata =  ' . query_api($term, $location) . ';//data from yelp api search - location and term instantiated in above php code
+        var searchterm = "'.$term.'";
+        var pricetag = \'https://dreambiz.today/image/forleasetag.png\';
+        var availsizelow = 1000000000;
         var availsizehigh = 0;
         var availpricelow = 1000000000;
         var availpricehigh = 0;
@@ -353,63 +179,20 @@ echo '
         var filterpricehigh = document.getElementById("pricetwo").value;
         var infowindow = new google.maps.InfoWindow();
         var asinfowindow = new google.maps.InfoWindow();
-        var twit = 1234.56; //for the twitter - social media heatmap
         var propertyposition;
 
-             //////////////////////////////////creates the demand grid for twitter blue water heatmap////////////////////////////////////////////////
-function generateDemandGrid(centerLat, centerLon, radiusMiles, spacingMiles) {
-
-    var points = [];
-
-    // Approximate miles per degree
-    var milesPerLat = 69;
-    var milesPerLon = 69 * Math.cos(centerLat * Math.PI / 180);
-
-    var latStep = spacingMiles / milesPerLat;
-    var lonStep = spacingMiles / milesPerLon;
-
-    var latMin = centerLat - (radiusMiles / milesPerLat);
-    var latMax = centerLat + (radiusMiles / milesPerLat);
-    var lonMin = centerLon - (radiusMiles / milesPerLon);
-    var lonMax = centerLon + (radiusMiles / milesPerLon);
-
-    for (var lat = latMin; lat <= latMax; lat += latStep) {
-
-        for (var lon = lonMin; lon <= lonMax; lon += lonStep) {
-
-            var latDistance = (lat - centerLat) * milesPerLat;
-            var lonDistance = (lon - centerLon) * milesPerLon;
-
-            var distance = Math.sqrt(
-                latDistance * latDistance +
-                lonDistance * lonDistance
-            );
-
-            if (distance <= radiusMiles) {
-                points.push({
-                    lat: lat,
-                    lon: lon
-                });
-            }
-        }
-    }
-
-    return points;
-}
-
-// Create 1-mile circular demand area on 0.05-mile grid
-var demandGrid = generateDemandGrid(
-    dago.lat,
-    dago.lng,
-    1.8,//grid coverage
-    0.05 //resolution
-);
+    //pseudo activity array to display shopping activity as a heat map
+        var activityCenters = [
+            { lat: 32.7242, lon: -117.1701, strength: 0.69 },//little italy
+            { lat: 32.7122, lon: -117.1624, strength: 0.82 },//gaslamp
+            { lat: 32.7027, lon: -117.1501, strength: 0.50 },//chicano park
+            { lat: 32.7316, lon: -117.1513, strength: 0.64 },//balboa park
+            { lat: 32.7180, lon: -117.1695, strength: 0.52 },//100 west a
+            { lat: 32.7107, lon: -117.1644, strength: 0.90 }//petco park
+        ];
 
 
-
-       //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
+        //instantiate map and set styles to match hackathon winner design
         map = new google.maps.Map(document.getElementById(\'map\'),{
           zoom: 15,
           center: dago,
@@ -447,132 +230,55 @@ var demandGrid = generateDemandGrid(
                     elementType: \'all\',
                     stylers: [{ color: \'#7dcdcd\'}]}]});
 
-        /* TEST: one blue demand circle
-new google.maps.Circle({
-    map: map,
-    center: {
-        lat: 32.701208246376815,
-        lng: -117.16013000000008
-    },
-    radius: 500,
-    fillColor: \'#5A8BFF\',
-    fillOpacity: 0.5,
-    strokeOpacity: 0
-});
-//*/
+        //renders heatmap color tiles in heatmap.js
+          for (var i = 0; i < activityCenters.length; i++) {
 
-//* PSEUDO DEMAND
-
-var demandCenters = [
-    { lat: 32.7242, lon: -117.1701, strength: 69 },//little italy
-    { lat: 32.7122, lon: -117.1624, strength: 82 },//gaslamp
-    { lat: 32.7027, lon: -117.1501, strength: 50 },//chicano park
-    { lat: 32.7316, lon: -117.1513, strength: 64 },//balboa park
-    { lat: 32.7180, lon: -117.1695, strength: 52 },//100 west a
-    { lat: 32.7107, lon: -117.1712, strength: 90 }//petco park
-];
-
-for (var gridIndex = 0; gridIndex < demandGrid.length; gridIndex++) {
-
-    var point = demandGrid[gridIndex];
-    var demand = 0;
-
-    for (var centerIndex = 0; centerIndex < demandCenters.length; centerIndex++) {
-
-        var center = demandCenters[centerIndex];
-
-        var latDistance = (point.lat - center.lat) * 69;
-        var lonDistance = (point.lon - center.lon) *
-            (69 * Math.cos(point.lat * Math.PI / 180));
-
-        var distance = Math.sqrt(
-            latDistance * latDistance +
-            lonDistance * lonDistance
+        var activityGrid = generateHeatmapGrid(
+            activityCenters[i].lat,
+            activityCenters[i].lon,
+            0.44,  // ~700 meter radius
+            0.05   // ~16 meter resolution
         );
 
-        demand += center.strength *
-            Math.exp(-(distance * distance) / 0.15);//adjust the gradient curve for demand centers
-    }
+        renderActivityGrid(
+            activityGrid,
+            activityCenters[i].lat,
+            activityCenters[i].lon,
+            0.08,
+            \'#0597ff\',
+            activityCenters[i].strength
+        );
+        }//end heatmap forloop
 
-    demand = Math.max(0, Math.min(100, demand));
-
-    var cellSize = 0.05;
-
-    var cellLat = cellSize / 69;
-    var cellLon = cellSize / (69 * Math.cos(point.lat * Math.PI / 180));
-
-    new google.maps.Rectangle({
-        map: map,
-        bounds: {
-            north: point.lat + cellLat / 2,
-            south: point.lat - cellLat / 2,
-            east: point.lon + cellLon / 2,
-            west: point.lon - cellLon / 2
-        },
-        fillColor: \'#0597ff\',
-        fillOpacity: (demand / 100) * 0.62,
-        strokeOpacity: 0
-    });
-
-}
-//*/
-      //creates array for heatmap to be filled with dark competitor clouds
-      var heatmaparray = [];
+     //creates array for yelp competitor businesses to support popup cards and blood in the water heatmapping
+      var competitorarray = [];
 
       //for loop creates map pins from data array for business competitors collected from yelp API
-      for(var i = 0; i < data.length; i += 1) {
+      for(var i = 0; i < yelpdata.length; i += 1) {
 
-        var rating = data[i].rating;
+        var rating = yelpdata[i].rating;
+        var yelplat = yelpdata[i].lat;
+        var yelplong = yelpdata[i].long;
+
       //instantiate position variable from data array
-         var pos = new google.maps.LatLng(data[i].lat,data[i].long);
-         heatmaparray.push({location: pos, weight: rating});// syntax from google API reference -- {location: new google.maps.LatLng(37.782, -122.447), weight: 0.5},
+         var pos = new google.maps.LatLng(yelpdata[i].lat,yelpdata[i].long);
+         competitorarray.push({location: pos, weight: rating});// syntax from google API reference -- {location: new google.maps.LatLng(37.782, -122.447), weight: 0.5},
 
         //make the red heatmap blob for each competitor business
 
-       var ratingOpacity = Math.max(0, ((rating - 3.5) / 1.5) * 0.50);
+        var yelpGrid = generateHeatmapGrid(
+        yelplat,
+        yelplong,
+        0.44,  // ~700 meter radius 0.44
+        0.05   // ~16 meter resolution
+        );
 
-var yelpGrid = generateDemandGrid(
-    data[i].lat,
-    data[i].long,
-    0.44,  // ~700 meter radius
-    0.05   // ~16 meter resolution
-);
+        var ratingOpacity = Math.max(0.00, ((rating - 3.5) / 1.5) * 0.75);
 
-for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
 
-    var yelpPoint = yelpGrid[yelpGridIndex];
+        //renders heatmap color tiles in heatmap.js
 
-    var latDistance = (yelpPoint.lat - data[i].lat) * 69;
-    var lonDistance = (yelpPoint.lon - data[i].long) *
-        (69 * Math.cos(yelpPoint.lat * Math.PI / 180));
-
-    var distance = Math.sqrt(
-        latDistance * latDistance +
-        lonDistance * lonDistance
-    );
-
-    var competition = ratingOpacity *
-        Math.exp(-(distance * distance) / 0.08);
-
-    var cellSize = 0.05;
-
-    var cellLat = cellSize / 69;
-    var cellLon = cellSize /
-        (69 * Math.cos(yelpPoint.lat * Math.PI / 180));
-
-    new google.maps.Rectangle({
-        map: map,
-        bounds: {
-            north: yelpPoint.lat + cellLat / 2,
-            south: yelpPoint.lat - cellLat / 2,
-            east: yelpPoint.lon + cellLon / 2,
-            west: yelpPoint.lon - cellLon / 2
-        },
-        fillColor: \'#FF0000\',
-        fillOpacity: competition,
-        strokeOpacity: 0
-    });
-}
+        renderActivityGrid (yelpGrid, yelplat, yelplong, 0.08, \'#FF0000\', ratingOpacity);
 
 
 
@@ -605,10 +311,10 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
 
          //instantiate variable string of html code for info window that pops up when map pin is clicked on
          var contentString = \'<div id="infowincontent">\'+
-            \'<div id="infowinbiz"><p>\' + data[i].bizname + \'</p><p><span id="infowinbizsqft">\' +
-             data[i].address +\'</span><span id="infowinbizprice">\' + \'possible competitor\' + \'</span></p></div>\' +
+            \'<div id="infowinbiz"><p>\' + yelpdata[i].bizname + \'</p><p><span id="infowinbizsqft">\' +
+             yelpdata[i].address +\'</span><span id="infowinbizprice">\' + \'possible competitor\' + \'</span></p></div>\' +
             \'<div id="infowinfsale">\' + \'<img src="image/\' + stars +\'star.png" alt="" style="padding:0 8px 0 0;"></div>\' +
-            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + data[i].address + \',\' + data[i].zip + \'&key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=marker" alt="yelp competing business image source google api"></div>\' +
+            \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + yelpdata[i].address + \',\' + yelpdata[i].zip + \'&key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=marker" alt="yelp competing business image source google api"></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
             \'<div id="infowindetails" >\' +
@@ -623,7 +329,7 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
              \'</div>\' +
             \'<div id="infowinbutblk" onclick="showDetails()"><p>Show Details</p></div>\'
             ;
-         //creates map pin, gives it the specific info window content and binds the info window listener
+         //creates competitor map pin, gives it the specific info window content and binds the info window listener
          var marker = new google.maps.Marker({position: pos,map: map,icon: \'https://dreambiz.today/image/pin-comp.png\' });
          marker.content = contentString;
          var infoWindow = new google.maps.InfoWindow();
@@ -632,15 +338,16 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
                                 infoWindow.open(this.getMap(), this);
                             });
 
-                          // popup = new Popup( pos, document.getElementById(\'content\'));
-                 //  popup.setMap(map);//googles setMap for popup that replaces info window
 
-       }//end for loop
 
-        //for loop creates map pins from availablesite array
-       var socialmediaheatmaparray = [];
+       }//end yelp competitor array for loop
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+///////////////////////////////////for loop creates map pins from pseudo loopnet availablesite array///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         var length = availablesite.length;
+
       for( i = 0; i < length; i += 1) {
 
          var arraysizelow = availablesite[i].size.low;
@@ -651,72 +358,17 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
          var lon = availablesite[i].long;
 
 
-      //run filters on availablesite array
+      //run filters on availablesite array - dashboard sliders can adjust price or square footage while searching for available sites
        if ((filtersizelow <= arraysizelow  &&  filtersizehigh >= arraysizehigh)
        || ( filterpricelow <= arraypricehigh  &&  filterpricehigh >= arraypricelow  ))
       {
-
-/*//////////////////////////////////////////testing demand grid ajax call//////////////////////////////////////////////////////////////////////////////////////////
-
-
-            $.ajax({
-    url: "twit2.php",
-    type: "GET",
-    data: {
-        "term": "beer",
-        "lat": dago.lat,
-        "lon": dago.lon
-    },
-    success: function(result) {
-        console.log("Twitter result:", result);
-    },
-    error: function(xhr, status, error) {
-        console.log("Twitter error:", status, error);
-    }
-});
-//*/////////////////////////////////////////////////end testing demand grid ajax call///////////////////////////////////////////////////////
-
-
-/*////////////////////////////////////////////////////top of original ajax call///////////////////////////////////////////////////////////////
-
-   $.ajax({
-            url: "twit.php",
-            type: "GET",
-            data:  {"term": searchterm,"lat":lat,"lon":lon},
-
-            success: function (twitterresult) {
-                //create new row with answer  todo check for msg[0].value being null and handle it - used the catch below...prolly needs work
-                if (twitterresult != null) {
-
-                    try {
-                        //do something with info
-
-                      twit = twitterresult;
-                      
-                 
-                      
-                    } catch (e) {
-
-                        //do something if try fails
-                        console.log( "failed on try");
-                    }
-                }
-
-                else {
-                    //do something if returns null
-                    console.log( "----------empty response -------");
-                }
-            }
-
-        });
-//*///////////////////////////////bottom of ajax call////////////////////////////////////////////////////////////////////////////////////
 
 
          //instantiate variable string of html code for info window that pops up when map pin is clicked on
          contentString = \'<div id="infowincontent">\'+
             \'<div id="infowinbiz"><p>\' + availablesite[i].address + \'<span id="infowinbiztype">\' + availablesite[i].type + \'</span></p><p><span id="infowinbizsqft">\' +
             availablesite[i].size.list + \'</span><span id="infowinbizprice">\' + availablesite[i].price.list + \'</span></p></div>\' +
-            \'<div id="infowinfsale">\' + \'<img src="\' + pricetag +\'" alt="">"</div>\' +
+            \'<div id="infowinfsale">\' + \'<img src="\' + pricetag +\'" alt=""></div>\' +
             \'<div id="infowinimg"><img src="https://maps.googleapis.com/maps/api/streetview?size=260x165&location=\' + availablesite[i].address + \', 92101&key=' . $GLOBALS['GOOGLE_API_KEY'] . '&libraries=marker" alt="available business location for rent or lease"></div>\' +
             \'<div id="infowingraf"><img src="image/pedchart.png"></div>\' +
             \'<div id="infowingrafdesc" >\' + \'Pedestrian volume\' + \'</div>\' +
@@ -733,21 +385,8 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
 
              \'</div>\' +
             \'<div id="infowinbutblk" onclick="showDetails()"><p>Show Details</p></div>\'
-            ;
-/*///////////////////////////pre-deprecation code with google maps marker and heat mapping/////////////////////////////////////
-              //instantiate position variable from loopnet data array for making available property data points - still has heatmap weight from twitter
-              //TODO move the heatmap and weight functions to a separate layer wherein heatmap covers the whole view and locations are actual twitter users tweet or home location
-         propertyposition = new google.maps.LatLng(lat,lon);
-         socialmediaheatmaparray.push({location: propertyposition, weight: twit});
-         //creates map pin, gives it the specific info window content and binds the info window listener
-         marker = new google.maps.Marker({position: propertyposition,map: map,icon: \'https://dreambiz.today/image/pin-grow.png\' });
-         marker.content = contentString;
-         infoWindow = new google.maps.InfoWindow();
-         google.maps.event.addListener(marker, \'click\', function () {
-                                infoWindow.setContent(this.content);
-                                infoWindow.open(this.getMap(), this);
-//*/////////////////////////////////////////////////////////////////////////////////////////////////////
-//*/////////////////////////////////new code with heatmap array push removed///////////////////////////////////////////
+            ;//end contentString
+
                     // Available property location
             propertyposition = new google.maps.LatLng(lat, lon);
 
@@ -757,27 +396,20 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
                 position: propertyposition,
                 map: map,
                 icon: \'https://dreambiz.today/image/pin-grow.png\'
-            });
+            });//end marker
 
-            marker.content = contentString;
+            marker.content = contentString;//binds contentString html variable to map marker content
+
             infoWindow = new google.maps.InfoWindow();
 
             google.maps.event.addListener(marker, \'click\', function () {
                 infoWindow.setContent(this.content);
                 infoWindow.open(this.getMap(), this);
-//*///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                            });
 
+             });
 
-      //  popup = new Popup(
-          //  new google.maps.LatLng(lat, lon),
-            //    document.getElementById(\'content\'));
-
-     //   popup.setMap(map);//googles setMap for popup that replaces info window
-
-                               // setTimeout(function () { GeocodeMarker.info.open(GoogleMap, GeocodeMarker); }, 300);//an attempt to slow loading to give twitter a chance to fill infowindow
        }//end filters
-       }//end for loop
+       }//end availablesite for loop
 
 
        document.getElementById("sizeone").value = filtersizelow;
@@ -785,18 +417,6 @@ for (var yelpGridIndex = 0; yelpGridIndex < yelpGrid.length; yelpGridIndex++) {
        document.getElementById("priceone").value = filterpricelow;
        document.getElementById("pricetwo").value = filterpricehigh;
 
-
-
-         var socmedArray = new google.maps.MVCArray(socialmediaheatmaparray);
-
-        /*  socialmediaheatmap = new google.maps.visualization.HeatmapLayer({
-          data: socmedArray,
-          radius: 100,
-          gradient:["rgba(90, 139, 255, 0)", "rgba(90, 139, 255, 0.03)","rgba(90,139,255, 1)"],
-          map: map
-        });
-        */
-           var pointArray = new google.maps.MVCArray(heatmaparray);
 
 
 
@@ -1009,6 +629,8 @@ function definePopupClass() {
         document.getElementById("activity").style.border = "none";
         document.getElementById("activity").style.width = "100%";
     }
+
+
     function getSiteList(){
      var availablesite = [
             { address: "520 5th Ave",
